@@ -25,11 +25,25 @@
         h1 {
             font-size: 4em;
             margin-bottom: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 0.15em solid orange;
+            animation: typing 3.5s steps(30, end), blink-caret 0.75s step-end infinite;
             transition: color 0.5s ease;
         }
         p {
             font-size: 2em;
             transition: color 0.5s ease;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: orange }
         }
 
         /* Media Queries for responsiveness */
@@ -72,7 +86,7 @@
 </head>
 <body>
     <div class="container" id="container">
-        <h1>Website Under Construction</h1>
+        <h1 id="typing-text">Website Under Construction</h1>
         <p>We are working hard to bring you a new experience. Stay tuned!</p>
     </div>
     <script>
@@ -86,6 +100,12 @@
         container.addEventListener('mouseout', () => {
             document.body.style.background = 'linear-gradient(45deg, #FF6316, #FF9A36)';
             document.body.style.color = 'white';
+        });
+
+        const typingText = document.getElementById('typing-text');
+
+        typingText.addEventListener('animationend', () => {
+            typingText.style.borderRight = 'none';
         });
     </script>
 </body>
