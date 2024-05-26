@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #FF6316;
+            background: linear-gradient(45deg, #FF6316, #FF9A36);
             color: white;
             display: flex;
             justify-content: center;
@@ -15,7 +15,7 @@
             height: 100vh;
             margin: 0;
             font-family: 'Inter', sans-serif;
-            transition: background-color 0.5s ease, color 0.5s ease;
+            transition: background 0.5s ease, color 0.5s ease;
         }
         .container {
             text-align: center;
@@ -79,12 +79,12 @@
         const container = document.getElementById('container');
 
         container.addEventListener('mouseover', () => {
-            document.body.style.backgroundColor = 'white';
+            document.body.style.background = 'linear-gradient(45deg, white, #FFD1A1)';
             document.body.style.color = '#FF6316';
         });
 
         container.addEventListener('mouseout', () => {
-            document.body.style.backgroundColor = '#FF6316';
+            document.body.style.background = 'linear-gradient(45deg, #FF6316, #FF9A36)';
             document.body.style.color = 'white';
         });
     </script>
