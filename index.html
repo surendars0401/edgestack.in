@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>website under construction</title>
+    <title>Website Under Construction</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -86,23 +86,28 @@
 </head>
 <body>
     <div class="container" id="container">
-        <h1 id="typing-text">Arya i love you ❤</h1>
+        <h1 id="typing-text">Website under Construction</h1>
         <p>We are working hard to bring you a edge experience. Stay tuned!</p>
     </div>
     <script>
         const container = document.getElementById('container');
+        const typingText = document.getElementById('typing-text');
 
         container.addEventListener('mouseover', () => {
             document.body.style.background = 'linear-gradient(45deg, white, #FFD1A1)';
             document.body.style.color = '#FF6316';
+            typingText.textContent = 'AI on Edge';
+            typingText.style.borderRight = 'none';  // Remove border
+            typingText.style.animation = 'none';  // Remove typing animation
         });
 
         container.addEventListener('mouseout', () => {
             document.body.style.background = 'linear-gradient(45deg, #FF6316, #FF9A36)';
             document.body.style.color = 'white';
+            typingText.textContent = 'Website under construction';
+            typingText.style.borderRight = '0.15em solid orange';  // Restore border for typing effect
+            typingText.style.animation = 'typing 3.5s steps(30, end), blink-caret 0.75s step-end infinite';  // Restore typing animation
         });
-
-        const typingText = document.getElementById('typing-text');
 
         typingText.addEventListener('animationend', () => {
             typingText.style.borderRight = 'none';
