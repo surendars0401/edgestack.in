@@ -3,22 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D edgeStack</title>
+    <title>3D edgeStack Sphere with Milky Green Central Text</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background: black;
+            background: linear-gradient(45deg, #3a1c71, #d76d77, #ffaf7b);
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         canvas {
-            display: block;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+    </div>
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -28,20 +40,16 @@
         let particles = [];
 
         class TextParticle {
-            constructor(phi, theta) {
-                this.phi = phi;
-                this.theta = theta;
-                this.text = "edgestack"[Math.floor(Math.random() * 9)];
+            constructor(x, y, z, letter) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+                this.text = letter;
                 this.size = 16;
             }
 
             project() {
-                const radius = Math.min(width, height) * 0.4;
-                let x = radius * Math.sin(this.phi) * Math.cos(this.theta);
-                let y = radius * Math.sin(this.phi) * Math.sin(this.theta);
-                let z = radius * Math.cos(this.phi);
-
-                // Apply rotations
+                let { x, y, z } = this;
                 const cosY = Math.cos(rotationY);
                 const sinY = Math.sin(rotationY);
                 const tempX = x;
@@ -54,37 +62,62 @@
                 y = y * cosX - z * sinX;
                 z = tempY * sinX + z * cosX;
 
-                // Project 3D to 2D
                 const scale = 1000 / (1000 + z);
                 const projectedX = width / 2 + x * scale;
                 const projectedY = height / 2 + y * scale;
 
-                return { x: projectedX, y: projectedY, scale: scale };
+                return { x: projectedX, y: projectedY, scale: scale, z: z };
             }
 
             draw() {
                 const projected = this.project();
-                ctx.fillStyle = 'white';
-                ctx.font = `${this.size * projected.scale}px Arial`;
+                const opacity = Math.max(0, Math.min(1, (projected.z + 150) / 300));
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.5})`;
+                ctx.font = `${this.size * projected.scale}px Inter`;
                 ctx.fillText(this.text, projected.x, projected.y);
             }
         }
 
         function initializeParticles() {
             particles = [];
-            const particleCount = 1000;
+            const word = "edgestack";
+            const particleCount = 800;
+            const radius = Math.min(width, height) * 0.35;
+            const phi = Math.PI * (3 - Math.sqrt(5));
+
             for (let i = 0; i < particleCount; i++) {
-                const phi = Math.acos(1 - 2 * i / particleCount);
-                const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-                particles.push(new TextParticle(phi, theta));
+                const y = 1 - (i / (particleCount - 1)) * 2;
+                const radiusAtY = Math.sqrt(1 - y * y);
+                const theta = phi * i;
+                const x = Math.cos(theta) * radiusAtY;
+                const z = Math.sin(theta) * radiusAtY;
+                const letter = word[i % word.length];
+                particles.push(new TextParticle(x * radius, y * radius, z * radius, letter));
             }
         }
 
-        function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-            ctx.fillRect(0, 0, width, height);
+        function drawCenteredText() {
+            const text = "edgestack";
+            ctx.save();
+            ctx.translate(width / 2, height / 2);
 
+            // Milky green color
+            ctx.fillStyle = "rgba(152, 251, 152, 0.8)"; // Pale Green with some transparency
+            ctx.font = "bold 80px Inter";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            // Simple text rendering without 3D effect
+            ctx.fillText(text, 0, 0);
+
+            ctx.restore();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            particles.sort((a, b) => b.project().z - a.project().z);
             particles.forEach(particle => particle.draw());
+            drawCenteredText();
         }
 
         function resize() {
@@ -92,8 +125,8 @@
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
-            initializeParticles(); // Reinitialize particles on resize
-            draw(); // Redraw when resizing
+            initializeParticles();
+            draw();
         }
 
         let isDragging = false;
@@ -113,7 +146,7 @@
                 rotationX += deltaY * 0.005;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
-                draw(); // Redraw only when rotating
+                draw();
             }
         });
 
@@ -127,8 +160,14 @@
 
         window.addEventListener('resize', resize);
 
-        // Initialize and draw
         resize();
+
+        function animate() {
+            rotationY += 0.002;
+            draw();
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
