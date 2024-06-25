@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iridescent Spiral Fractal</title>
+    <title>Trippy Multi-Spiral Fractal</title>
     <style>
         body, html {
             margin: 0;
@@ -58,34 +58,40 @@
             return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
         }
 
-        function drawSpiral(time) {
-            ctx.clearRect(0, 0, width, height);
-            
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxRadius = Math.min(width, height) * 0.45;
-            
-            const rotationSpeed = 0.0005;
-            const rotationOffset = mouseX * 0.01;
+        function drawSpiral(centerX, centerY, time, spiralIndex) {
+            const maxRadius = Math.min(width, height) * 0.2;
+            const rotationSpeed = 0.001 + spiralIndex * 0.0005;
+            const rotationOffset = mouseX * 0.005;
             const spiralTightness = 0.1 + (mouseY / height) * 0.2;
+            const waveFrequency = 0.1 + spiralIndex * 0.05;
             
-            for (let angle = 0; angle < 100 * Math.PI; angle += 0.1) {
-                const radius = angle * maxRadius / (100 * Math.PI);
-                const x = centerX + radius * Math.cos(angle + time * rotationSpeed + rotationOffset);
-                const y = centerY + radius * Math.sin(angle + time * rotationSpeed + rotationOffset);
+            for (let angle = 0; angle < 50 * Math.PI; angle += 0.1) {
+                const radius = angle * maxRadius / (50 * Math.PI);
+                const waveOffset = Math.sin(time * 0.001 + spiralIndex) * 20;
+                const x = centerX + radius * Math.cos(angle + time * rotationSpeed + rotationOffset) + waveOffset;
+                const y = centerY + radius * Math.sin(angle + time * rotationSpeed + rotationOffset) + waveOffset;
                 
-                const hue = (angle / (20 * Math.PI) + time * 0.0002) % 1;
-                const lightness = 0.5 + 0.3 * Math.sin(angle * spiralTightness);
+                const hue = (angle / (10 * Math.PI) + time * 0.0002 + spiralIndex * 0.1) % 1;
+                const lightness = 0.5 + 0.3 * Math.sin(angle * spiralTightness + time * 0.002);
                 
                 ctx.fillStyle = hslToRgb(hue, 1, lightness);
                 ctx.beginPath();
-                ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                ctx.arc(x, y, 2 + Math.sin(time * 0.01 + angle) * 1, 0, 2 * Math.PI);
                 ctx.fill();
             }
         }
 
         function animate(time) {
-            drawSpiral(time);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            const spiralCount = 5;
+            for (let i = 0; i < spiralCount; i++) {
+                const centerX = width * (i + 1) / (spiralCount + 1);
+                const centerY = height / 2 + Math.sin(time * 0.001 + i) * height * 0.2;
+                drawSpiral(centerX, centerY, time, i);
+            }
+            
             requestAnimationFrame(animate);
         }
 
