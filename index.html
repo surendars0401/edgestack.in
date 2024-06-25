@@ -1,1 +1,112 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iridescent Fractal</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #fractal {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fractal"></canvas>
+    <script>
+        const canvas = document.getElementById('fractal');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function hslToRgb(h, s, l) {
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        function drawFractal(mouseX, mouseY) {
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+
+            const maxIterations = 100;
+            const zoom = 4 / Math.min(width, height);
+
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    let zx = (x - width / 2) * zoom;
+                    let zy = (y - height / 2) * zoom;
+                    let cx = zx;
+                    let cy = zy;
+
+                    let n = 0;
+                    while (n < maxIterations) {
+                        const zx2 = zx * zx - zy * zy;
+                        const zy2 = 2 * zx * zy;
+                        zx = zx2 + cx;
+                        zy = zy2 + cy;
+                        if (zx * zx + zy * zy > 16) {
+                            break;
+                        }
+                        n++;
+                    }
+
+                    const hue = (n / maxIterations + mouseX / width + mouseY / height) % 1;
+                    const [r, g, b] = hslToRgb(hue, 1, 0.5);
+
+                    const pixelIndex = (y * width + x) * 4;
+                    data[pixelIndex] = r;
+                    data[pixelIndex + 1] = g;
+                    data[pixelIndex + 2] = b;
+                    data[pixelIndex + 3] = 255;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        let mouseX = 0, mouseY = 0;
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            drawFractal(mouseX, mouseY);
+        });
+
+        drawFractal(0, 0);
+    </script>
+</body>
+</html>
