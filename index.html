@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D edgeStack Sphere with Milky Green Central Text</title>
+    <title>3D Sphere with Rotating Text</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
     <style>
         body, html {
@@ -96,28 +96,10 @@
             }
         }
 
-        function drawCenteredText() {
-            const text = "edgestack";
-            ctx.save();
-            ctx.translate(width / 2, height / 2);
-
-            // Milky green color
-            ctx.fillStyle = "rgba(152, 251, 152, 0.8)"; // Pale Green with some transparency
-            ctx.font = "bold 80px Inter";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            
-            // Simple text rendering without 3D effect
-            ctx.fillText(text, 0, 0);
-
-            ctx.restore();
-        }
-
         function draw() {
             ctx.clearRect(0, 0, width, height);
             particles.sort((a, b) => b.project().z - a.project().z);
             particles.forEach(particle => particle.draw());
-            drawCenteredText();
         }
 
         function resize() {
